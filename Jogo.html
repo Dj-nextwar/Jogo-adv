@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Jogo de Adivinhação</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .carta {
+            background-color: white;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px auto;
+            max-width: 1000px;
+        }
+
+
+        /* =========================================
+           IMAGENS DAS CARTAS
+        ========================================= */
+
+        .imagens {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            justify-items: center;
+            gap: 25px 15px;
+            margin: 25px 0;
+        }
+
+        .item-imagem {
+            width: 170px;
+            text-align: center;
+        }
+
+        .imagem-container {
+            width: 150px;
+            height: 150px;
+
+            margin: 0 auto 10px auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background-color: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+
+            overflow: hidden;
+        }
+
+        .imagem-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .nome-lugar {
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 1.2;
+            margin-top: 5px;
+        }
+
+        .estado {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+
+        /* =========================================
+           CARTA PRINCIPAL
+        ========================================= */
+
+        .imagens-principal {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 35px 25px;
+        }
+
+        .imagens-principal .item-imagem {
+            width: 210px;
+        }
+
+        .imagens-principal .imagem-container {
+            width: 190px;
+            height: 190px;
+        }
+
+        .imagens-principal .nome-lugar {
+            font-size: 18px;
+        }
+
+        .imagens-principal .estado {
+            font-size: 16px;
+        }
+
+
+        /* =========================================
+           RESPOSTAS
+        ========================================= */
+
+        .resposta {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .resposta label {
+            margin: 0 15px;
+            cursor: pointer;
+        }
+
+
+        /* =========================================
+           BOTÕES
+        ========================================= */
+
+        button {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 20px 10px;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .botao-resetar {
+            background-color: #777;
+        }
+
+        .botao-resetar:hover {
+            background-color: #555;
+        }
+
+
+        /* =========================================
+           RESULTADO
+        ========================================= */
+
+        #resultado {
+            display: none;
+        }
+
+        #gifGenio {
+            width: 250px;
+            max-height: 300px;
+            object-fit: contain;
+        }
+
+        #imagemResultado {
+            width: 250px;
+            height: 250px;
+            object-fit: contain;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .nome-resposta {
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .estado-resposta {
+            font-size: 20px;
+            color: #555;
+            margin-top: 0;
+        }
+
+        .numero-resposta {
+            font-size: 16px;
+            color: #777;
+        }
+
+
+        /* =========================================
+           RESPONSIVIDADE
+        ========================================= */
+
+        @media (max-width: 900px) {
+
+            .imagens,
+            .imagens-principal {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .imagens,
+            .imagens-principal {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 450px) {
+
+            .imagens,
+            .imagens-principal {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Jogo de Adivinhação</h1>
+
+    <p>
+        Memorize uma imagem da Carta Principal.
+    </p>
+
+
+    <!-- ================================= -->
+    <!-- CARTA PRINCIPAL -->
+    <!-- ================================= -->
+
+    <div class="carta">
+
+        <h2>Carta Principal</h2>
+
+        <p>
+            Memorize uma das imagens abaixo:
+        </p>
+
+        <div
+            id="cartaPrincipal"
+            class="imagens imagens-principal"
+        ></div>
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- CARTA 1 -->
+    <!-- ================================= -->
+
+    <div class="carta">
+
+        <h2>Carta 1</h2>
+
+        <div
+            id="carta1"
+            class="imagens"
+        ></div>
+
+        <div class="resposta">
+
+            <p>
+                O lugar que você memorizou aparece nesta carta?
+            </p>
+
+            <label>
+
+                <input
+                    type="radio"
+                    name="carta1"
+                    value="sim"
+                >
+
+                Sim
+
+            </label>
+
+            <label>
+
+                <input
+                    type="radio"
+                    name="carta1"
+                    value="nao"
+                    checked
+                >
+
+                Não
+
+            </label>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- CARTA 2 -->
+    <!-- ================================= -->
+
+    <div class="carta">
+
+        <h2>Carta 2</h2>
+
+        <div
+            id="carta2"
+            class="imagens"
+        ></div>
+
+        <div class="resposta">
+
+            <p>
+                O lugar que você memorizou aparece nesta carta?
+            </p>
+
+            <label>
+
+                <input
+                    type="radio"
+                    name="carta2"
+                    value="sim"
+                >
+
+                Sim
+
+            </label>
+
+            <label>
+
+                <input
+                    type="radio"
+                    name="carta2"
+                    value="nao"
+                    checked
+                >
+
+                Não
+
+            </label>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- CARTA 3 -->
+    <!-- ================================= -->
+
+    <div class="carta">
+
+        <h2>Carta 3</h2>
+
+        <div
+            id="carta3"
+            class="imagens"
+        ></div>
+
+        <div class="resposta">
+
+            <p>
+                O lugar que você memorizou aparece nesta carta?
+            </p>
+
+            <label>
+
+                <input
+                    type="radio"
+                    name="carta3"
+                    value="sim"
+                >
+
+                Sim
+
+            </label>
+
+            <label>
+
+                <input
+                    type="radio"
+                    name="carta3"
+                    value="nao"
+                    checked
+                >
+
+                Não
+
+            </label>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- CARTA 4 -->
+    <!-- ================================= -->
+
+    <div class="carta">
+
+        <h2>Carta 4</h2>
+
+        <div
+            id="carta4"
+            class="imagens"
+        ></div>
+
+        <div class="resposta">
+
+            <p>
+                O lugar que você memorizou aparece nesta carta?
+            </p>
+
+            <label>
+
+                <input
+                    type="radio"
+                    name="carta4"
+                    value="sim"
+                >
+
+                Sim
+
+            </label>
+
+            <label>
+
+                <input
+                    type="radio"
+                    name="carta4"
+                    value="nao"
+                    checked
+                >
+
+                Não
+
+            </label>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- BOTÕES -->
+    <!-- ================================= -->
+
+    <button onclick="descobrirImagem()">
+
+        🔮 Descobrir imagem
+
+    </button>
+
+    <button
+        class="botao-resetar"
+        onclick="resetarJogo()"
+    >
+
+        🔄 Jogar novamente
+
+    </button>
+
+
+    <!-- ================================= -->
+    <!-- RESULTADO -->
+    <!-- ================================= -->
+
+    <div
+        id="resultado"
+        class="carta"
+    >
+
+        <h2>
+            🧞 O GÊNIO DESCOBRIU!
+        </h2>
+
+        <img
+            id="gifGenio"
+            src="Genio.gif"
+            alt="Gênio"
+        >
+
+        <p>
+            Você estava pensando em:
+        </p>
+
+        <p
+            id="nomeResultado"
+            class="nome-resposta"
+        ></p>
+
+        <p
+            id="estadoResultado"
+            class="estado-resposta"
+        ></p>
+
+        <p
+            id="numeroResultado"
+            class="numero-resposta"
+        ></p>
+
+        <img
+            id="imagemResultado"
+            src=""
+            alt="Imagem descoberta"
+        >
+
+    </div>
+
+
+    <script>
+
+        // =========================================
+        // CARTAS
+        // =========================================
+
+        const carta1 = [
+            1,
+            3,
+            5,
+            7,
+            9,
+            11,
+            13,
+            15
+        ];
+
+
+        const carta2 = [
+            2,
+            3,
+            6,
+            7,
+            10,
+            11,
+            14,
+            15
+        ];
+
+
+        const carta3 = [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+        ];
+
+
+        const carta4 = [
+            4,
+            5,
+            6,
+            7,
+            12,
+            13,
+            14,
+            15
+        ];
+
+
+        // =========================================
+        // DESTINOS
+        // =========================================
+
+        const destinos = {
+
+            1: {
+                nome: "Jalapão",
+                estado: "Tocantins",
+                interno: "GATO"
+            },
+
+            2: {
+                nome: "Amazônia",
+                estado: "Amazonas",
+                interno: "RATO"
+            },
+
+            3: {
+                nome: "Brasília",
+                estado: "Distrito Federal",
+                interno: "PALHAÇO"
+            },
+
+            4: {
+                nome: "Florianópolis",
+                estado: "Santa Catarina",
+                interno: "CACHORRO"
+            },
+
+            5: {
+                nome: "Porto de Galinhas",
+                estado: "Pernambuco",
+                interno: "ELEFANTE"
+            },
+
+            6: {
+                nome: "Fernando de Noronha",
+                estado: "Pernambuco",
+                interno: "AVIAO"
+            },
+
+            7: {
+                nome: "Lençóis Maranhenses",
+                estado: "Maranhão",
+                interno: "CAVALO"
+            },
+
+            8: {
+                nome: "Maragogi",
+                estado: "Alagoas",
+                interno: "SOL"
+            },
+
+            9: {
+                nome: "São Joaquim",
+                estado: "Santa Catarina",
+                interno: "COELHO"
+            },
+
+            10: {
+                nome: "Cânion do Xingó",
+                estado: "Sergipe",
+                interno: "BOLA"
+            },
+
+            11: {
+                nome: "Ilhabela",
+                estado: "São Paulo",
+                interno: "PEIXE"
+            },
+
+            12: {
+                nome: "Petrópolis",
+                estado: "Rio de Janeiro",
+                interno: "PAPAI NOEL"
+            },
+
+            13: {
+                nome: "Bonito",
+                estado: "Mato Grosso do Sul",
+                interno: "BALAO"
+            },
+
+            14: {
+                nome: "Vale da Lua",
+                estado: "Goiás",
+                interno: "NAVIO"
+            },
+
+            15: {
+                nome: "São Paulo",
+                estado: "São Paulo",
+                interno: "BRASIL"
+            }
+
+        };
+
+
+        // =========================================
+        // CAMINHO DAS IMAGENS
+        // =========================================
+
+        function caminhoImagem(numero) {
+
+            // O arquivo do número 5 é PNG
+
+            if (numero === 5) {
+
+                return "img5.png";
+
+            }
+
+            // Os demais arquivos são JPG
+
+            return "img" + numero + ".jpg";
+
+        }
+
+
+        // =========================================
+        // MOSTRAR CARTA
+        // =========================================
+
+        function mostrarCarta(idCarta, numeros) {
+
+            const carta =
+                document.getElementById(idCarta);
+
+            carta.innerHTML = "";
+
+
+            numeros.forEach(function(numero) {
+
+                const item =
+                    document.createElement("div");
+
+                item.className =
+                    "item-imagem";
+
+
+                // Área fixa da imagem
+
+                const imagemContainer =
+                    document.createElement("div");
+
+                imagemContainer.className =
+                    "imagem-container";
+
+
+                const imagem =
+                    document.createElement("img");
+
+                imagem.src =
+                    caminhoImagem(numero);
+
+                imagem.alt =
+                    destinos[numero].interno;
+
+
+                imagemContainer.appendChild(imagem);
+
+
+                // Nome do lugar
+
+                const nome =
+                    document.createElement("div");
+
+                nome.className =
+                    "nome-lugar";
+
+                nome.textContent =
+                    destinos[numero].nome;
+
+
+                // Estado
+
+                const estado =
+                    document.createElement("div");
+
+                estado.className =
+                    "estado";
+
+                estado.textContent =
+                    destinos[numero].estado;
+
+
+                item.appendChild(
+                    imagemContainer
+                );
+
+                item.appendChild(
+                    nome
+                );
+
+                item.appendChild(
+                    estado
+                );
+
+
+                carta.appendChild(item);
+
+            });
+
+        }
+
+
+        // =========================================
+        // PREENCHER CARTA PRINCIPAL
+        // =========================================
+
+        mostrarCarta(
+            "cartaPrincipal",
+            [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+            ]
+        );
+
+
+        // =========================================
+        // PREENCHER CARTAS
+        // =========================================
+
+        mostrarCarta(
+            "carta1",
+            carta1
+        );
+
+
+        mostrarCarta(
+            "carta2",
+            carta2
+        );
+
+
+        mostrarCarta(
+            "carta3",
+            carta3
+        );
+
+
+        mostrarCarta(
+            "carta4",
+            carta4
+        );
+
+
+        // =========================================
+        // DESCOBRIR
+        // =========================================
+
+        function descobrirImagem() {
+
+            let contador = 0;
+
+
+            // Carta 1 = +1
+
+            const resposta1 =
+                document.querySelector(
+                    'input[name="carta1"]:checked'
+                );
+
+            if (resposta1.value === "sim") {
+
+                contador += 1;
+
+            }
+
+
+            // Carta 2 = +2
+
+            const resposta2 =
+                document.querySelector(
+                    'input[name="carta2"]:checked'
+                );
+
+            if (resposta2.value === "sim") {
+
+                contador += 2;
+
+            }
+
+
+            // Carta 3 = +8
+
+            const resposta3 =
+                document.querySelector(
+                    'input[name="carta3"]:checked'
+                );
+
+            if (resposta3.value === "sim") {
+
+                contador += 8;
+
+            }
+
+
+            // Carta 4 = +4
+
+            const resposta4 =
+                document.querySelector(
+                    'input[name="carta4"]:checked'
+                );
+
+            if (resposta4.value === "sim") {
+
+                contador += 4;
+
+            }
+
+
+            // =====================================
+            // RESULTADO
+            // =====================================
+
+            const destino =
+                destinos[contador];
+
+
+            document.getElementById(
+                "numeroResultado"
+            ).textContent =
+                "Número encontrado: " + contador;
+
+
+            document.getElementById(
+                "nomeResultado"
+            ).textContent =
+                destino.nome;
+
+
+            document.getElementById(
+                "estadoResultado"
+            ).textContent =
+                destino.estado;
+
+
+            document.getElementById(
+                "imagemResultado"
+            ).src =
+                caminhoImagem(contador);
+
+
+            // Mostrar resultado
+
+            document.getElementById(
+                "resultado"
+            ).style.display = "block";
+
+
+            // Rolar até resultado
+
+            document.getElementById(
+                "resultado"
+            ).scrollIntoView({
+
+                behavior: "smooth"
+
+            });
+
+        }
+
+
+        // =========================================
+        // RESETAR JOGO
+        // =========================================
+
+        function resetarJogo() {
+
+            // Voltar todas as respostas para "Não"
+
+            document.querySelectorAll(
+                'input[type="radio"][value="nao"]'
+            ).forEach(function(radio) {
+
+                radio.checked = true;
+
+            });
+
+
+            // Esconder o resultado
+
+            document.getElementById(
+                "resultado"
+            ).style.display = "none";
+
+
+            // Limpar imagem do resultado
+
+            document.getElementById(
+                "imagemResultado"
+            ).src = "";
+
+
+            // Limpar textos do resultado
+
+            document.getElementById(
+                "nomeResultado"
+            ).textContent = "";
+
+
+            document.getElementById(
+                "estadoResultado"
+            ).textContent = "";
+
+
+            document.getElementById(
+                "numeroResultado"
+            ).textContent = "";
+
+
+            // Voltar para o topo
+
+            window.scrollTo({
+
+                top: 0,
+                behavior: "smooth"
+
+            });
+
+        }
+
+    </script>
+
+</body>
+
+</html>
